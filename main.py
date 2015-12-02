@@ -6,14 +6,14 @@ from PIL import Image
 from flask import Flask, request, render_template
 
 app = Flask(__name__)
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'bmp'])
 CUTOFF = 2 ** 20
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-def process_data_sequential(pixdata, xmin, xmax, ymin, ymax, threshold):
+def process_data_helper(pixdata, xmin, xmax, ymin, ymax, threshold):
     for x_pos in xrange(xmin, xmax):
         for y_pos in xrange(ymin, ymax):
             alpha = 255 - sum(pixdata[x_pos, y_pos][:3])/3
@@ -25,7 +25,7 @@ def process_data(pixdata, xmin, xmax, ymin, ymax, threshold):
     ysize = ymax-ymin
 
     if xsize*ysize < CUTOFF:
-        process_data_sequential(pixdata, xmin, xmax, ymin, ymax, threshold)
+        process_data_helper(pixdata, xmin, xmax, ymin, ymax, threshold)
         return
 
     if xsize > ysize:
